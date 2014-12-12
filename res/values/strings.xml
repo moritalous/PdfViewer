@@ -1,0 +1,9 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">PdfViewer</string>
+    <string name="open">Open</string>
+    
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+
+</resources>
