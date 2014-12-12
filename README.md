@@ -11,5 +11,5 @@ PdfRendererBasic
 https://github.com/googlesamples/android-PdfRendererBasic
 
 StorageClient
-https://github.com/googlesamples/android-StorageClient
 
+https://github.com/googlesamples/android-StorageClient
