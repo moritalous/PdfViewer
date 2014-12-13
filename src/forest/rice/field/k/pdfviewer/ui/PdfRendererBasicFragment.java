@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -172,8 +173,16 @@ public class PdfRendererBasicFragment extends Fragment implements
 		// Use `openPage` to open a specific page in PDF.
 		mCurrentPage = mPdfRenderer.openPage(index);
 		// Important: the destination bitmap must be ARGB (not RGB).
-		Bitmap bitmap = Bitmap.createBitmap(mCurrentPage.getWidth(),
-				mCurrentPage.getHeight(), Bitmap.Config.ARGB_8888);
+
+		Point displaySize = new Point();
+		getActivity().getWindowManager().getDefaultDisplay()
+				.getSize(displaySize);
+		Point bitmapSize = getImageSize(displaySize, mCurrentPage.getWidth(),
+				mCurrentPage.getHeight());
+		displaySize = null;
+
+		Bitmap bitmap = Bitmap.createBitmap(bitmapSize.x, bitmapSize.y,
+				Bitmap.Config.ARGB_8888);
 		// Here, we render the page onto the Bitmap.
 		// To render a portion of the page, use the second and third parameter.
 		// Pass nulls to get
@@ -224,6 +233,14 @@ public class PdfRendererBasicFragment extends Fragment implements
 			break;
 		}
 		}
+	}
+
+	private Point getImageSize(Point deviceSize, int imageWidth, int imageHeight) {
+		float aspectRatio = (float) imageWidth / (float) imageHeight;
+		Point point = new Point();
+		point.x = deviceSize.x;
+		point.y = (int) (point.x / aspectRatio);
+		return point;
 	}
 
 }
