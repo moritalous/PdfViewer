@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.pdf.PdfRenderer;
@@ -32,6 +31,7 @@ public class PdfRendererBasicFragment extends Fragment implements
 	 * Key string for saving the state of current page index.
 	 */
 	private static final String STATE_CURRENT_PAGE_INDEX = "current_page_index";
+	private static final String STATE_URI = "uri";
 
 	/**
 	 * File descriptor of the PDF.
@@ -76,6 +76,19 @@ public class PdfRendererBasicFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		if (null != savedInstanceState) {
+			uri = Uri.parse(savedInstanceState.getString(STATE_URI));
+		}
+
+		try {
+			openRenderer();
+		} catch (IOException e) {
+			e.printStackTrace();
+			Toast.makeText(getActivity(), "Error! " + e.getMessage(),
+					Toast.LENGTH_SHORT).show();
+			getActivity().finish();
+		}
+
 		return inflater.inflate(R.layout.fragment_pdf_renderer_basic,
 				container, false);
 	}
@@ -103,14 +116,6 @@ public class PdfRendererBasicFragment extends Fragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		try {
-			openRenderer(activity);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Toast.makeText(activity, "Error! " + e.getMessage(),
-					Toast.LENGTH_SHORT).show();
-			activity.finish();
-		}
 	}
 
 	@Override
@@ -129,12 +134,13 @@ public class PdfRendererBasicFragment extends Fragment implements
 		if (null != mCurrentPage) {
 			outState.putInt(STATE_CURRENT_PAGE_INDEX, mCurrentPage.getIndex());
 		}
+		outState.putString(STATE_URI, uri.toString());
 	}
 
 	/**
 	 * Sets up a {@link android.graphics.pdf.PdfRenderer} and related resources.
 	 */
-	private void openRenderer(Context context) throws IOException {
+	private void openRenderer() throws IOException {
 		mFileDescriptor = getActivity().getContentResolver()
 				.openFileDescriptor(uri, "r");
 		// This is the PdfRenderer we use to render the PDF.
